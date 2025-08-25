@@ -1,0 +1,142 @@
+%En la condición inicial todos están del lado izquierdo y el bote 
+%está de ese lado, en tanto que en la condición final 
+%todos están del lado derecho y el bote también
+inicial(miscan(3,3,0,0,izquierda)).
+final(miscan(0,0,3,3,derecha)).
+
+solución(Solución) :-
+	inicial(Inicial),
+	final(Final),
+	camino(Inicial, Solución, Final).
+
+noEn(_, []).
+
+noEn(X, [Y | Resto]) :-
+	X \= Y,
+	noEn(X, Resto).
+
+%para encontrar un Camino de Inicial a Final tenemos que 
+%empezar desde cero; esto es, con una lista de acciones previas vacía, 
+%representada por []. La función de este último argumento será 
+%evitar que el programa repita una misma situación dos veces y 
+%pueda quedarse en un ciclo sin fin.
+
+camino(Inicial, Camino, Final) :-
+	camino(Inicial, Camino, Final, []).
+
+%a un cruce del rio para la final, caso base
+camino(Inicial, [Cruce], Final, _) :-
+	válido(Cruce, Inicial, Final).
+
+camino(Inicial, [Cruce | Resto], Final, Visitadas) :-
+	válido(Cruce, Inicial, Intermedia),
+	noEn(Intermedia, Visitadas),
+	camino(Intermedia, Resto, Final, [Inicial | Visitadas]).
+
+válido(bote(1,0, izquierda),
+	miscan(MI,CI,MD,CD, derecha),
+	miscan(NI,CI,ND,CD, izquierda)) :-
+	ND is MD - 1,
+	NI is MI + 1,
+	ND >= 0,
+	NI =< 3,
+	(NI = 0 ; NI >= CI),
+	(ND = 0 ; ND >= CD).
+
+válido(bote(1,0, derecha),
+	miscan(MI,CI,MD,CD, izquierda),
+	miscan(NI,CI,ND,CD, derecha)) :-
+	NI is MI - 1,
+	ND is MD + 1,
+	NI >= 0,
+	ND =< 3,
+	(NI = 0; NI >= CI),
+	(ND = 0; ND >= CD).
+
+válido(bote(0,1, izquierda),
+	miscan(MI,CI,MD,CD, derecha),
+	miscan(MI,DI,MD,DD, izquierda)) :-
+	DD is CD - 1,
+	DI is CI + 1,
+	DD >= 0,
+	DI =< 3,
+	(MI = 0; MI >= DI),
+	(MD = 0; MD >= DD).
+
+válido(bote(0,1, derecha),
+	miscan(MI,CI,MD,CD, izquierda),
+	miscan(MI,DI,MD,DD, derecha)) :-
+	DI is CI - 1,
+	DD is CD + 1,
+	DI >= 0,
+	DD =< 3,
+	(MI = 0; MI >= DI),
+	(MD = 0; MD >= DD).
+
+válido(bote(2,0, izquierda),
+	miscan(MI,CI,MD,CD, derecha),
+	miscan(NI,CI,ND,CD, izquierda)) :-
+	ND is MD - 2,
+	NI is MI + 2,
+	ND >= 0,
+	NI =< 3,
+	(NI = 0; NI >= CI),
+	(ND = 0; ND >= CD).
+
+válido(bote(2,0, derecha),
+	miscan(MI,CI,MD,CD, izquierda),
+	miscan(NI,CI,ND,CD, derecha)) :-
+	NI is MI - 2,
+	ND is MD + 2,
+	NI >= 0,
+	ND =< 3,
+	(NI = 0; NI >= CI),
+	(ND = 0; ND >= CD).
+
+válido(bote(0,2, izquierda),
+	miscan(MI,CI,MD,CD, derecha),
+	miscan(MI,DI,MD,DD, izquierda)) :-
+	DD is CD - 2,
+	DI is CI + 2,
+	DD >= 0,
+	DI =< 3,
+	(MI = 0; MI >= DI),
+	(MD = 0; MD >= DD).
+
+válido(bote(0,2, derecha),
+	miscan(MI,CI,MD,CD, izquierda),
+	miscan(MI,DI,MD,DD, derecha)) :-
+	DI is CI - 2,
+	DD is CD + 2,
+	DI >= 0,
+	DD =< 3,
+	(MI = 0; MI >= DI),
+	(MD = 0; MD >= DD).
+
+válido(bote(1,1, izquierda),
+	miscan(MI,CI,MD,CD, derecha),
+	miscan(NI,DI,ND,DD, izquierda)) :-
+	ND is MD - 1,
+	DD is CD - 1,
+	NI is MI + 1,
+	DI is CI + 1,
+	ND >= 0,
+	DD >= 0,
+	NI =< 3,
+	DI =< 3,
+	(NI = 0; NI >= DI),
+	(ND = 0; ND >= DD).
+
+válido(bote(1,1, derecha),
+	miscan(MI,CI,MD,CD, izquierda),
+	miscan(NI,DI,ND,DD, derecha)) :-
+	NI is MI - 1,
+	DI is CI - 1,
+	ND is MD + 1,
+	DD is CD + 1,
+	NI >= 0,
+	DI >= 0,
+	ND =< 3,
+	DD =< 3,
+	(NI = 0; NI >= DI),
+	(ND = 0; ND >= DD).
